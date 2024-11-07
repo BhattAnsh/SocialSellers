@@ -51,14 +51,15 @@ const AboutSectionOne = () => {
 
             <div className="w-full px-4 lg:w-1/2">
               <div
-                className="wow fadeInUp relative mx-auto aspect-[25/24] max-w-[500px] lg:mr-0"
+                className="wow fadeInUp flex justify-center items-center  relative mx-auto aspect-[25/24] max-w-[full] lg:mr-0"
                 data-wow-delay=".2s"
               >
                 <Image
-                  src="/images/about/about-image.svg"
+                  src="/images/about/about_image.svg"
                   alt="about-image"
-                  fill
-                  className="drop-shadow-three mx-auto max-w-full dark:hidden dark:drop-shadow-none lg:mr-0"
+                  width={800}
+                  height={776}
+                  className="mx-auto w-[10000px] dark:hidden lg:mr-0"
                 />
                 <Image
                   src="/images/about/about-image-dark.svg"
