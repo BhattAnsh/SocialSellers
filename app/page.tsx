@@ -26,10 +26,7 @@ export default function Home() {
       <Video />
       <Brands />
       <AboutSectionOne />
-      <AboutSectionTwo />
       <Testimonials />
-      <Pricing />
-      <Blog />
       <Contact />
     </>
   );

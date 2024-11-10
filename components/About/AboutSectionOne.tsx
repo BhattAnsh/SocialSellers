@@ -41,7 +41,7 @@ const AboutSectionOne = () => {
                   </div>
 
                   <div className="w-full px-3 sm:w-1/2 lg:w-full xl:w-1/2">
-                    <List text="Powered by Next.js " />
+                    <List text="Powered by Next.js " /> 
                     <List text="Detailed Guides & Documentation" />
                     <List text="User-Friendly for All Creators" />
                   </div>
