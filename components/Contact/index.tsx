@@ -1,6 +1,14 @@
+"use client"
 import NewsLatterBox from "./NewsLatterBox";
-
+import Button from "../ui/Button";
+import {useState} from "react";
 const Contact = () => {
+  const [name, setName] = useState("");
+  const submit = (e) => {
+    e.preventDefault();
+
+    console.log("submit");
+  };
   return (
     <section id="contact" className="overflow-hidden py-16 md:py-20 lg:py-28">
       <div className="container">
@@ -66,9 +74,7 @@ const Contact = () => {
                     </div>
                   </div>
                   <div className="w-full px-4">
-                    <button className="shadow-submit dark:shadow-submit-dark rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90">
-                      Submit Ticket
-                    </button>
+                    <Button onClick={submit} className="" href="" name="Submit"></Button>
                   </div>
                 </div>
               </form>
