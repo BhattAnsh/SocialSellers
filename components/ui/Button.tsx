@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 type Props = {
   name: string;
-  href: string;
+  href?: string;
   className: string;
   color?: string;
   onClick?: (event:React.MouseEvent<HTMLAnchorElement>) => void;

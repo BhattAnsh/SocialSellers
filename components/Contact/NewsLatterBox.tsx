@@ -1,9 +1,34 @@
 "use client";
-
+import Button from "../ui/Button";
 import { useTheme } from "next-themes";
-
+import { useState } from "react";
 const NewsLatterBox = () => {
   const { theme } = useTheme();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const subscribe = (e) => {
+    e.preventDefault();
+    if (name === "" || email === "") {
+      const values = [name, email];
+      values.forEach((value, index) => {
+        if (value === "") {
+          document
+            .querySelectorAll(".news-input")
+            [index].classList.add("border-red-500");
+        }
+        document
+          .querySelectorAll(".input")
+          [index].addEventListener("focus", () => {
+            document
+              .querySelectorAll(".input")
+              [index].classList.remove("border-red-500");
+          });
+      });
+      alert("Please fill all the fields");
+      return;
+    }
+    window.alert("Your ticket has been submitted successfully");
+  }
 
   return (
     <div
@@ -17,24 +42,21 @@ const NewsLatterBox = () => {
         Lorem ipsum dolor sited Sed ullam corper consectur adipiscing Mae ornare
         massa quis lectus.
       </p>
-      <div>
+      <div className="flex flex-col items-center gap-1 justify-center ">
         <input
           type="text"
           name="name"
           placeholder="Enter your name"
-          className="border-stroke dark:text-body-color-dark dark:shadow-two mb-4 w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:focus:border-primary dark:focus:shadow-none"
+          className=" news-input border-stroke dark:text-body-color-dark dark:shadow-two mb-4 w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:focus:border-primary dark:focus:shadow-none"
         />
         <input
           type="email"
           name="email"
           placeholder="Enter your email"
-          className="border-stroke dark:text-body-color-dark dark:shadow-two mb-4 w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:focus:border-primary dark:focus:shadow-none"
+          className="news-input border-stroke dark:text-body-color-dark dark:shadow-two mb-4 w-full rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none focus:border-primary dark:border-transparent dark:bg-[#2C303B] dark:focus:border-primary dark:focus:shadow-none"
         />
-        <input
-          type="submit"
-          value="Subscribe"
-          className="shadow-submit dark:shadow-submit-dark mb-5 flex w-full cursor-pointer items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90"
-        />
+        <Button className="" name="Subscribe" onClick={subscribe} href="">
+        </Button>
         <p className="dark:text-body-color-dark text-center text-base leading-relaxed text-body-color">
           No spam guaranteed, So please don’t send any spam mail.
         </p>
