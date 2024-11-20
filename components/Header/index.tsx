@@ -6,9 +6,11 @@ import { useEffect, useState } from "react";
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 import Button from "../ui/Button";
+import { useSession, signOut, signIn } from "next-auth/react";
 
 const Header = () => {
   // Navbar toggle
+  const { data: session } = useSession();
   const [navbarOpen, setNavbarOpen] = useState(false);
   const navbarToggleHandler = () => {
     setNavbarOpen(!navbarOpen);
@@ -44,17 +46,17 @@ const Header = () => {
       <header
         className={`header left-0 top-0 z-40 flex w-full items-center ${
           sticky
-            ? "dark:bg-gray-dark dark:shadow-sticky-dark fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition"
+            ? "fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition dark:bg-gray-dark dark:shadow-sticky-dark"
             : "absolute bg-transparent"
         }`}
       >
         <div className="container">
           <div className="relative -mx-4 flex items-center justify-between">
-            <div className="w-60 max-w-full px-4 xl:mr-12">
+            <div className="w-40 sm:w-60 max-w-full px-4 xl:mr-12">
               <Link
                 href="/"
                 className={`header-logo block w-full ${
-                  sticky ? "py-5 lg:py-2" : "py-8"
+                  sticky ? "py-3 lg:py-2" : "py-4 lg:py-8"
                 } `}
               >
                 <Image
@@ -103,7 +105,7 @@ const Header = () => {
                     navbarOpen
                       ? "visibility top-full opacity-100"
                       : "invisible top-[120%] opacity-0"
-                  }`}
+                  } max-h-[80vh] overflow-y-auto lg:max-h-full lg:overflow-visible`}
                 >
                   <ul className="block lg:flex lg:space-x-12">
                     {menuData.map((menuItem, index) => (
@@ -159,10 +161,47 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="flex items-center justify-end pr-16 lg:pr-0 gap-5">
-                <Button name="Login" href="" className="p-5" color="white"/>
-                <Button name="Signup" href="" className="" color="blue"/>
-                <div>
+              <div className="flex items-center justify-end gap-2 sm:gap-5 pr-16 lg:pr-0">
+                {session?.user ? (
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    {session.user.image && (
+                      <Image
+                        src={session.user.image}
+                        alt="Profile"
+                        width={32}
+                        height={32}
+                        className="rounded-full hidden sm:block"
+                      />
+                    )}
+                    <span className="text-dark dark:text-white text-sm sm:text-base hidden sm:block">
+                      {session.user.name || session.user.email}
+                    </span>
+                    <Button
+                      name="Logout"
+                      href=""
+                      className="p-2 sm:p-5 text-sm sm:text-base"
+                      color="white"
+                      onClick={() => signOut()}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <Button
+                      name="Login"
+                      onClick={() => signIn()}
+                      className="p-2 sm:p-5 text-sm sm:text-base"
+                      color="white"
+                      href="/signin"
+                    />
+                    <Button
+                      name="Signup" 
+                      className="text-sm sm:text-base"
+                      color="blue"
+                      href="/signup"
+                    />
+                  </>
+                )}
+                <div className="ml-2">
                   <ThemeToggler />
                 </div>
               </div>
