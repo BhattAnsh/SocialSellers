@@ -10,9 +10,10 @@ import "../styles/index.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
-  children,
+  children, session
 }: {
   children: React.ReactNode;
+  session: any;
 }) {
   return (
     <html suppressHydrationWarning lang="en">
@@ -23,7 +24,7 @@ export default function RootLayout({
       <head />
 
       <body className={`bg-[#FCFCFC] dark:bg-black ${inter.className}`}>
-        <Providers>
+        <Providers session={session}>
           <Header />
           {children}
           <Footer />
