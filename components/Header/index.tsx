@@ -6,11 +6,9 @@ import { useEffect, useState } from "react";
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 import Button from "../ui/Button";
-import { useSession, signOut, signIn } from "next-auth/react";
 
 const Header = () => {
   // Navbar toggle
-  const { data: session } = useSession();
   const [navbarOpen, setNavbarOpen] = useState(false);
   const navbarToggleHandler = () => {
     setNavbarOpen(!navbarOpen);
@@ -46,7 +44,7 @@ const Header = () => {
       <header
         className={`header left-0 top-0 z-40 flex w-full items-center ${
           sticky
-            ? "fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition dark:bg-gray-dark dark:shadow-sticky-dark"
+            ? "dark:bg-gray-dark dark:shadow-sticky-dark fixed z-[9999] bg-white !bg-opacity-80 shadow-sticky backdrop-blur-sm transition"
             : "absolute bg-transparent"
         }`}
       >
@@ -161,47 +159,9 @@ const Header = () => {
                   </ul>
                 </nav>
               </div>
-              <div className="flex items-center justify-end gap-5 pr-16 lg:pr-0">
-                {session?.user ? (
-                  <div className="flex items-center gap-3">
-                    {session.user.image && (
-                      <Image
-                        src={session.user.image}
-                        alt="Profile"
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                    )}
-                    <span className="text-dark dark:text-white">
-                      {session.user.name || session.user.email}
-                    </span>
-                    <Button
-                      name="Logout"
-                      href=""
-                      className="p-5"
-                      color="white"
-                      onClick={() => signOut()}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <Button
-                      name="Login"
-                      onClick={() => signIn()}
-                      className="p-5"
-                      color="white"
-                      href=""
-                    />
-                    <Button
-                      name="Signup"
-                      onClick={() => signIn()}  
-                      className=""
-                      color="blue"
-                      href=""
-                    />
-                  </>
-                )}
+              <div className="flex items-center justify-end pr-16 lg:pr-0 gap-5">
+                <Button name="Login" href="" className="p-5" color="white"/>
+                <Button name="Signup" href="" className="" color="blue"/>
                 <div>
                   <ThemeToggler />
                 </div>
