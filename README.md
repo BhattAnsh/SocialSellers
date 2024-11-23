@@ -104,6 +104,8 @@ npm run dev``
 cd backend
 python app.py``
 
+---
+
 ## Success Metrics
 
 - **Time Efficiency**: Demonstrates significant reductions in the time required for creating product listings, enabling sellers to scale their operations quickly and focus on customer engagement.  
