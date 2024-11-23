@@ -30,7 +30,7 @@ Here’s how **Social Sellers** works its magic:
 4. **Validation**: Checks for errors in inputs or API responses.  
 5. **Output**: A structured, ready-to-use JSON product listing is created.  
 
-![Workflow Diagram](https://github.com/user-attachments/assets/4386c22f-faf4-4a8a-ae3d-821f2540ed33)  
+![image](https://github.com/user-attachments/assets/115fca99-153b-47a0-b0b8-cf36ff2e3caf)
 
 ---
 
