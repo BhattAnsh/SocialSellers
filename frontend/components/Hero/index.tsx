@@ -23,14 +23,13 @@ const Hero = () => {
                   Turn Your Social Media Discoveries into Amazon Purchases
                   Instantly!
                 </p>
-                <div className="flex flex-col items-center justify-start space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
-                  <Button name="Try it for Free" href="#" className="" />
-                  <Button
-                    name="Learn More"
-                    href="#"
-                    className=""
-                    color="white"
-                  />
+                <div className="mt-10">
+                  <Link
+                    href="/analyze"
+                    className="rounded-md bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  >
+                    Analyze
+                  </Link>
                 </div>
               </div>
             </div>
