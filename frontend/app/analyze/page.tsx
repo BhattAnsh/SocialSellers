@@ -34,38 +34,6 @@ interface ProductAnalysis {
   };
 }
 
-const dummyData: ProductAnalysis = {
-  metadata: {
-    asin: "DefaultASIN",
-    availability: "In Stock",
-    category: "Chair",
-    brand: "ErgoCo"
-  },
-  product_details: {
-    title: "Ergonomic Office Chair",
-    price: "USD 199.99",
-    attributes: ["Black", "Ergonomic", "Adjustable"],
-    materials: "Black, Ergonomic, Adjustable",
-    colors: "Black",
-    target_audience: "Office workers",
-    benefits: "Enhanced comfort and improved posture",
-    description: "Ergonomic Office Chair is an excellent Chair available at USD 199.99. It features high-quality materials such as Black, Ergonomic, Adjustable and comes in Black. It is designed for Office workers, offering benefits like Enhanced comfort and improved posture. Dimensions: 120 cm x 60 cm x 60 cm. Weight: 15 kg."
-  },
-  dimensions: {
-    height: "120",
-    width: "60",
-    length: "60",
-    unit: "cm"
-  },
-  item_weight: {
-    value: "15",
-    unit: "kg"
-  },
-  additional_info: {
-    warranty: "Warranty not provided"
-  }
-};
-
 export default function AnalyzePage() {
   const [postUrl, setPostUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -84,17 +52,24 @@ export default function AnalyzePage() {
       setError(null);
       setLoading(true);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      if (postUrl.includes("x.com") || postUrl.includes("twitter.com")) {
-        setAnalysis(dummyData);
+        const response = await fetch('http://127.0.0.1:8000/twitter-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ tweet_url: postUrl }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch data from API');
+        }
+
+        const data = await response.json();
+        setAnalysis(data);
         setStep(2);
-      } else {
-        setError("Failed to analyze the URL. Please try again.");
-      }
     } catch (error) {
       setError("Failed to analyze the URL. Please try again.");
+      console.error('API Error:', error);
     } finally {
       setLoading(false);
     }
