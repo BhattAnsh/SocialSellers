@@ -55,32 +55,61 @@ def parse_product_details(text):
 def generate_product_listing(content):
     details = parse_product_details(content)
 
+    # Prompts for additional data generation
     dimensions_prompt = f"Generate typical dimensions (height, width, length) for a product category like {details['category']}."
     weight_prompt = f"Estimate the typical weight of a product in the category {details['category']}."
+    type_prompt = f"What is the product type for a category like {details['category']}?"
+    benefits_prompt = f"What are the key benefits of a product in the {details['category']} category?"
+    audience_prompt = f"Who is the target audience for a product in the {details['category']} category?"
+
+    # Fetch data using Gemini API
     dimensions = generate_content_with_gemini(dimensions_prompt) or "0 cm x 0 cm x 0 cm"
     weight = generate_content_with_gemini(weight_prompt) or "0 kg"
+    product_type = generate_content_with_gemini(type_prompt) or details["category"]
+    product_benefits = generate_content_with_gemini(benefits_prompt) or "Not specified"
+    target_audience = generate_content_with_gemini(audience_prompt) or "General audience"
 
+    # Parse dimensions
     dims_match = re.match(r"(\d+)\s?cm\s*x\s*(\d+)\s?cm\s*x\s*(\d+)\s?cm", dimensions)
     height, width, length = dims_match.groups() if dims_match else ("0", "0", "0")
 
+    # Parse weight
     weight_value = re.match(r"(\d+(\.\d{1,2})?)\s?kg", weight)
     weight_kg = weight_value.group(1) if weight_value else "0"
 
-    description_prompt = f"Generate a detailed description for a {details['category']} product with attributes: {', '.join(details['attributes'])}."
-    extra_description = generate_content_with_gemini(description_prompt)
+    # Structure description with all variables
+    product_title = details["title"]
+    product_price = details["price"]
+    product_attributes = details["attributes"]
+    product_materials = ", ".join(details["attributes"]) if details["attributes"] else "Not specified"
+    product_colors = ", ".join(attr for attr in details["attributes"] if attr.lower() in ["black", "grey", "blue", "red", "green", "yellow", "gold", "silver"]) or "Not specified"
+    warranty_info = "Warranty not provided"  # Placeholder for warranty
 
+    # Optimized description
+    detailed_description = (
+        f"{product_title} is an excellent {product_type} available at {product_price}. "
+        f"It features high-quality materials such as {product_materials} and comes in {product_colors}. "
+        f"It is designed for {target_audience}, offering benefits like {product_benefits}. "
+        f"Dimensions: {height} cm x {width} cm x {length} cm. Weight: {weight_kg} kg."
+    )
+
+    # Create structured JSON output
     return {
         "metadata": {
             "asin": "DefaultASIN",
             "availability": "In Stock",
-            "category": details["category"],
+            "category": product_type,
             "brand": details["brand"],
         },
         "product_details": {
-            "title": details["title"],
-            "price": details["price"],
-            "attributes": details["attributes"],
-            "description": f"{details['title']} is now available at {details['price']}. {extra_description}",
+            "title": product_title,
+            "price": product_price,
+            "attributes": product_attributes,
+            "materials": product_materials,
+            "colors": product_colors,
+            "target_audience": target_audience,
+            "benefits": product_benefits,
+            "description": detailed_description,
         },
         "dimensions": {
             "height": height,
@@ -91,9 +120,11 @@ def generate_product_listing(content):
         "item_weight": {
             "value": weight_kg,
             "unit": "kg",
+        },
+        "additional_info": {
+            "warranty": warranty_info,
         }
     }
-
 @app.route('/twitter-data', methods=['POST'])
 def twitter_scraper():
     try:
