@@ -1,5 +1,3 @@
-import time
-from itertools import cycle
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
@@ -9,44 +7,22 @@ import google.generativeai as genai
 app = Flask(__name__)
 CORS(app)
 
-# List of API keys for rotation
-API_KEYS = cycle([
-    "AIzaSyDbulLzDOGLLV0hzvkqPeO0fmvP9hRXHXI",
-    "AIzaSyAH4nMhPaJyV0U4WCIPd5JPR0m5vd6RPz0",
-    "AIzaSyBMNx_npSE6cRl1ELqytUBwqYwFUX_KUJA"
-])
-
-# Initialize with the first API key
-current_api_key = next(API_KEYS)
-genai.configure(api_key=current_api_key)
-
-# Twitter API details
-TWITTER_BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAABU4wwEAAAAAfQ6aNhf8Ity2iJAhLyoO7x1AIx0%3DHmOHVyi7XOByv1sgOESFo3bDNzCewy7whjVvb83WDjxN9bFVrw"
+# Set up your API keys
+GENAI_API_KEY = "AIzaSyAH4nMhPaJyV0U4WCIPd5JPR0m5vd6RPz0"  # Replace with your actual Gemini API key
+TWITTER_BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAABU4wwEAAAAAfQ6aNhf8Ity2iJAhLyoO7x1AIx0%3DHmOHVyi7XOByv1sgOESFo3bDNzCewy7whjVvb83WDjxN9bFVrw"  # Replace with your Twitter Bearer Token
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-X_IG_APP_ID = "936619743392459"
+X_IG_APP_ID = "936619743392459"  # Updated Instagram App ID
 
-# Function to rotate API keys and reconfigure
-def rotate_api_key():
-    global current_api_key
-    current_api_key = next(API_KEYS)
-    genai.configure(api_key=current_api_key)
+genai.configure(api_key=GENAI_API_KEY)
 
-# Wrapper function for Gemini API with retry logic
-def generate_content_with_gemini(prompt, retries=3):
-    for attempt in range(retries):
-        try:
-            response = genai.GenerativeModel("gemini-1.5-flash").generate_content(prompt)
-            return response.text.strip() if response else ""
-        except Exception as e:
-            if "quota" in str(e).lower() and attempt < retries - 1:
-                print(f"Quota exceeded. Rotating API key... (Attempt {attempt + 1}/{retries})")
-                rotate_api_key()
-                time.sleep(2 ** attempt)  # Exponential backoff
-            else:
-                print(f"Gemini error: {e}")
-                return ""
+def generate_content_with_gemini(prompt):
+    try:
+        response = genai.GenerativeModel("gemini-1.5-flash").generate_content(prompt)
+        return response.text.strip() if response else ""
+    except Exception as e:
+        print(f"Gemini error: {e}")
+        return ""
 
-# Function to parse product details from text
 def parse_product_details(text):
     product_details = {
         "title": "",
@@ -56,21 +32,26 @@ def parse_product_details(text):
         "attributes": [],
     }
 
-    match_title = re.search(r"([A-Za-z0-9\s\-]+)\s+(is now available|now available|for sale|on sale|buy now)", text, re.IGNORECASE)
+    match_title = re.search(
+        r"([A-Za-z0-9\s\-]+)\s+(is now available|now available|for sale|on sale|buy now)",
+        text, re.IGNORECASE)
     if match_title:
         product_details["title"] = match_title.group(1).strip()
 
-    match_price = re.search(r"(Rs\.\s?\d{1,3}(?:,\d{3})*(?:\.\d{2})?)|(USD\s?\d+(\.\d{2})?)", text, re.IGNORECASE)
+    match_price = re.search(
+        r"(Rs\.\s?\d{1,3}(?:,\d{3})*(?:\.\d{2})?)|(USD\s?\d+(\.\d{2})?)",
+        text, re.IGNORECASE)
     if match_price:
         product_details["price"] = match_price.group(0).strip()
 
-    match_attributes = re.findall(r"(Black|Grey|Blue|Red|Green|Yellow|Gold|Silver|Cotton|Silk|Polyester|Leather|Wool)", text, re.IGNORECASE)
+    match_attributes = re.findall(
+        r"(Black|Grey|Blue|Red|Green|Yellow|Gold|Silver|Cotton|Silk|Polyester|Leather|Wool)",
+        text, re.IGNORECASE)
     if match_attributes:
         product_details["attributes"] = list(set(attr.capitalize() for attr in match_attributes))
 
     return product_details
 
-# Function to generate structured product listing
 def generate_product_listing(content):
     details = parse_product_details(content)
 
@@ -144,7 +125,6 @@ def generate_product_listing(content):
             "warranty": warranty_info,
         }
     }
-
 @app.route('/twitter-data', methods=['POST'])
 def twitter_scraper():
     try:
@@ -160,15 +140,53 @@ def twitter_scraper():
         headers = {"Authorization": f"Bearer {TWITTER_BEARER_TOKEN}"}
         response = requests.get(tweet_api_url, headers=headers)
 
-        if response.status_code == 429:  # Rate limited
-            time.sleep(5)  # Delay before retrying
-            return jsonify({"error": "Rate limit reached. Please try again later."}), 429
-
         if response.status_code != 200:
             return jsonify({"error": f"Failed to fetch Twitter data: {response.status_code}"}), response.status_code
 
         tweet_content = response.json().get("data", {}).get("text", "")
         listing = generate_product_listing(tweet_content)
+        return jsonify(listing)
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+@app.route('/instagram-data', methods=['POST'])
+def instagram_scraper():
+    try:
+        url = request.json.get("url")
+        if not url:
+            return jsonify({"error": "Instagram URL is required"}), 400
+
+        shortcode = re.search(r"instagram\.com/(?:p|reel)/([A-Za-z0-9-_]+)", url)
+        if not shortcode:
+            return jsonify({"error": "Invalid Instagram URL format"}), 400
+
+        # Use session for cookies and headers
+        session = requests.Session()
+        session.cookies.set("sessionid", "your_valid_sessionid_here")
+
+        # Updated GraphQL URL
+        graphql_url = f"https://www.instagram.com/p/{shortcode.group(1)}/?__a=1&__d=dis"
+        headers = {
+            "User-Agent": USER_AGENT,
+            "X-IG-App-ID": X_IG_APP_ID,
+        }
+
+        response = session.get(graphql_url, headers=headers)
+        if response.status_code != 200:
+            return jsonify({"error": f"Failed to fetch Instagram data: {response.status_code}"}), response.status_code
+
+        # Log raw response for debugging
+        json_data = response.json()
+        print(f"Raw Instagram response: {json_data}")
+
+        # Parse caption from response
+        caption = json_data.get('graphql', {}).get('shortcode_media', {}).get('edge_media_to_caption', {}).get('edges', [{}])[0].get('node', {}).get('text', "")
+        if not caption:
+            return jsonify({"error": "Could not extract caption from the Instagram post."}), 400
+
+        # Generate product listing from Instagram caption
+        listing = generate_product_listing(caption)
         return jsonify(listing)
 
     except Exception as e:
