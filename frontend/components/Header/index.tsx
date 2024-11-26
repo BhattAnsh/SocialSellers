@@ -96,7 +96,8 @@ const Header = () => {
 
           {/* Right Section - Updated Auth Section */}
           <div className="flex items-center gap-4">
-            {session ? (
+            <Link href={"/about"}><div className="about font-normal text-md hover:text-[#0B63E5]">About</div></Link>
+            {/* {session ? (
               <div className="relative">
                 <button 
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -142,7 +143,7 @@ const Header = () => {
                   Sign Up
                 </Link>
               </div>
-            )}
+            )} */}
 
             <ThemeToggler />
 
