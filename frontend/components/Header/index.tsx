@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import ThemeToggler from "./ThemeToggler";
 import { useSession, signOut } from "next-auth/react";
 import Image from "next/image";
+import { title } from "process";
+import path from "path";
+import { ModeToggle } from "../Mode-toggle";
 
 const menuData = [
   {
@@ -24,10 +27,16 @@ const menuData = [
     path: "/#contact",
     newTab: false,
   },
+  {
+    id: 4,
+    title: "About",
+    path: "/about",
+    newTab: false
+  }
 ];
 
 const Header = () => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
   const [sticky, setSticky] = useState(false);
   const [navbarOpen, setNavbarOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -96,7 +105,7 @@ const Header = () => {
 
           {/* Right Section - Updated Auth Section */}
           <div className="flex items-center gap-4">
-            <Link href={"/about"}><div className="about font-normal text-md hover:text-[#0B63E5]">About</div></Link>
+            {/* <Link href={"/about"}><div className="about font-normal text-md hover:text-[#0B63E5]">About</div></Link> */}
             {/* {session ? (
               <div className="relative">
                 <button 
@@ -145,7 +154,8 @@ const Header = () => {
               </div>
             )} */}
 
-            <ThemeToggler />
+            {/* <ThemeToggler /> */}
+            {/* <ModeToggle /> */}
 
             {/* Mobile Menu Toggle */}
             <button

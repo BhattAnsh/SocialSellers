@@ -1,6 +1,6 @@
 "use client"
 import NewsLatterBox from "./NewsLatterBox";
-import Button from "../ui/Button";
+import {Button} from "../ui/Button";
 import {useState} from "react";
 const Contact = () => {
   const [name, setName] = useState("");
@@ -74,7 +74,7 @@ const Contact = () => {
                     </div>
                   </div>
                   <div className="w-full px-4">
-                    <Button onClick={submit} className="" href="" name="Submit"></Button>
+                    {/* <Button onClick={submit} className="" href="" name="Submit"></Button> */}
                   </div>
                 </div>
               </form>

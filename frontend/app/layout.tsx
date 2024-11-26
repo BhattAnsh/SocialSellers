@@ -29,15 +29,21 @@ export default function RootLayout({
       <head />
 
       <body className={`bg-[#FCFCFC] dark:bg-black ${inter.className}`}>
-        <Providers>
+        <ThemeProvider attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange>
+        {/* <Providers> */}
           <Header />
           {children}
           <Footer />
           <ScrollToTop />
-        </Providers>
+        {/* </Providers> */}
+        </ThemeProvider>
       </body>
     </html>
   );
 }
 
-import { Providers } from "./providers";
+import { Providers } from "./providers";import { ThemeProvider } from "@/components/theme-provider";
+
